@@ -17,15 +17,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: HomePage(),
@@ -33,11 +24,19 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class FormDemo extends StatelessWidget {
+  const FormDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold();
+  }
+}
+
 Future<GithubUser> getData() async {
-  final http.Response response =
+  final response =
       await http.get(Uri.parse("https://api.github.com/users/AliJawadSubhan"));
-  var decodedData = jsonDecode(response.body);
-  return GithubUser.fromJson(decodedData);
+  return GithubUser.fromJson(jsonDecode(response.body));
 }
 
 class HomePage extends StatelessWidget {
@@ -46,11 +45,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
+      body: FutureBuilder<GithubUser>(
           future: getData(),
           builder: (ctx, snaptho) {
             if (snaptho.connectionState == ConnectionState.waiting) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
@@ -61,6 +60,7 @@ class HomePage extends StatelessWidget {
             }
             return Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     snaptho.data!.name.toString(),
@@ -219,6 +219,87 @@ class GithubUser {
     data['following'] = this.following;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    return data;
+  }
+}
+
+class TvShow {
+  String? total;
+  int? page;
+  int? pages;
+  List<TvShows>? tvShows;
+
+  TvShow({this.total, this.page, this.pages, this.tvShows});
+
+  TvShow.fromJson(Map<String, dynamic> json) {
+    total = json['total'];
+    page = json['page'];
+    pages = json['pages'];
+    if (json['tv_shows'] != null) {
+      tvShows = <TvShows>[];
+      json['tv_shows'].forEach((v) {
+        tvShows!.add(TvShows.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['total'] = this.total;
+    data['page'] = this.page;
+    data['pages'] = this.pages;
+    if (this.tvShows != null) {
+      data['tv_shows'] = this.tvShows!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class TvShows {
+  int? id;
+  String? name;
+  String? permalink;
+  String? startDate;
+  Null? endDate;
+  String? country;
+  String? network;
+  String? status;
+  String? imageThumbnailPath;
+
+  TvShows(
+      {this.id,
+      this.name,
+      this.permalink,
+      this.startDate,
+      this.endDate,
+      this.country,
+      this.network,
+      this.status,
+      this.imageThumbnailPath});
+
+  TvShows.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    permalink = json['permalink'];
+    startDate = json['start_date'];
+    endDate = json['end_date'];
+    country = json['country'];
+    network = json['network'];
+    status = json['status'];
+    imageThumbnailPath = json['image_thumbnail_path'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['permalink'] = this.permalink;
+    data['start_date'] = this.startDate;
+    data['end_date'] = this.endDate;
+    data['country'] = this.country;
+    data['network'] = this.network;
+    data['status'] = this.status;
+    data['image_thumbnail_path'] = this.imageThumbnailPath;
     return data;
   }
 }
